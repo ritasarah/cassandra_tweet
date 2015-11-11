@@ -31,9 +31,9 @@ public class CassandraTweet {
         
 //        registerUser("user","user");
 //        followFriend("user","user1");
-        tweet("user","tweet from users ya");
-//        showTweet("user");
-//        showTimeline("user");
+//        tweet("user","tweet from users ya");
+        showTweet("user");
+        showTimeline("user");
                                
         // Clean up the connection by closing it
         cluster.close();
@@ -52,35 +52,34 @@ public class CassandraTweet {
 
     public static void tweet(String uname,String tweet){
         String uuid = UUID.randomUUID().toString();
-//        UUID timeuuid = UUIDs.timeBased();
+        UUID timeuuid = UUIDs.timeBased();
 //        UUID.randomUUID().timestamp();
         
         session.execute("INSERT INTO tweets (tweet_id,username, body) VALUES ("+uuid+",'"+uname+"', '"+tweet+"')");
-        session.execute("INSERT INTO timeline (username,time,tweet_id) VALUES ('"+uname+"',"+UUIDs.timeBased()+","+uuid+")");
-        session.execute("INSERT INTO userline (username,time,tweet_id) VALUES ('"+uname+"',"+UUIDs.timeBased()+","+uuid+")");
+        session.execute("INSERT INTO timeline (username,time,tweet_id) VALUES ('"+uname+"',"+timeuuid+","+uuid+")");
+        session.execute("INSERT INTO userline (username,time,tweet_id) VALUES ('"+uname+"',"+timeuuid+","+uuid+")");
         System.out.println(uname+":"+tweet+" published");
         //belum ketimeline semua follower
-
     }
 
     public static void showTweet(String uname){
-        
         // Use select to get the user we just entered
         ResultSet results = session.execute("SELECT * FROM tweets WHERE username='"+uname+"'");
         for (Row row : results) {
-            System.out.format(" %s %s \n",  row.getString("username"), row.getString("body"));
+            System.out.format(" %s : %s \n",  row.getString("username"), row.getString("body"));
         }
     }
     
     public static void showTimeline(String uname){
         // Use select to get the user we just entered
-        System.out.println("========================================masuk showTimeline========================================");
-        ResultSet resultstl = session.execute("SELECT * FROM tweets WHERE username='"+uname+"'");
-//        ResultSet resultstl = session.execute("SELECT * FROM tweets WHERE username='user'");
+//        ResultSet resultstl = session.execute("SELECT * FROM tweets WHERE username='"+uname+"'");
+        ResultSet resultstl = session.execute("SELECT * FROM timeline WHERE username='user'");
         System.out.println("hasil query select: " + resultstl.all().size());
         for (Row row : resultstl) {
 //            System.out.format("%d\n", row.getInt("tweet_id"));
-            System.out.format("%s \t %s\n", row.getString("username"), row.getString("body"));
+            System.out.format("%s : %s \n", row.getString("username"), row.getString("body"));
         }
+        System.out.println("========================================masuk showTimeline========================================");
+
     }
 }
