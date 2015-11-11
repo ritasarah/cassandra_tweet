@@ -14,6 +14,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.utils.UUIDs;
+import java.util.Scanner;
 import java.util.UUID;
 
 /**
@@ -37,6 +38,54 @@ public class CassandraTweet {
                                
         // Clean up the connection by closing it
         cluster.close();
+    }
+    
+    public static void run() {
+        boolean stopper = false;
+        String mode = "", username = "";
+        Scanner input = new Scanner(System.in);
+        
+        while (!stopper) {
+            mode = input.next().toLowerCase();
+            if (mode.equals("/exit")) {
+                stopper = true;
+            }
+            else if (mode.equals("/login")) {
+                username = input.next().toLowerCase();
+                String password = input.next().toLowerCase();
+            }
+            else if (mode.equals("/register")) {
+                username = input.next().toLowerCase();
+                String password = input.next().toLowerCase();
+                registerUser(username, password);
+            }
+            else if (mode.equals("/follow")) {
+                String friend_name = input.next().toLowerCase();
+                followFriend (username, friend_name);
+            }
+            else if (mode.equals("/tweet_msg")) {
+                String msg = input.nextLine().toLowerCase();
+                tweet(username, msg);
+            }
+            else if (mode.equals("/tweet")) {
+                String nickname = input.next().toLowerCase();
+                showTweet(nickname);
+            }
+            else if (mode.equals("/timeline")) {
+                String nickname = input.next().toLowerCase();
+                showTimeline(nickname);
+            }
+        }
+    }
+    
+    public static void printModeList() {
+        System.out.println("Ketik '/login nickname password' untuk login ke akun Anda");
+        System.out.println("Ketik '/register nickname password' untuk bergabung ke twitter");
+        System.out.println("Ketik '/follow friend_name' untuk mem-follow teman Anda");
+        System.out.println("Ketik '/tweet_msg pesan_Anda' untuk men-tweet pesan Anda");
+        System.out.println("Ketik '/tweet username' untuk menampilkan tweet dari username tertentu");
+        System.out.println("Ketik '/timeline username' untuk menampilkan timeline dari username tertentu");
+        System.out.println("Ketik '/exit' untuk keluar dari program\n");
     }
     
     public static void registerUser(String uname,String pass){
