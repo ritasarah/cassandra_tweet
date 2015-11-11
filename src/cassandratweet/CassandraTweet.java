@@ -31,10 +31,10 @@ public class CassandraTweet {
         session = cluster.connect("anda");
         
 //        registerUser("user","user");
-//        followFriend("user","user1");
-//        tweet("user","tweet from users ya");
-        showTweet("user");
-        showTimeline("user");
+//        followFriend("user1","user");
+//        tweet("user","testing tweet");
+//        showTweet("user");
+//        showTimeline("user");
                                
         // Clean up the connection by closing it
         cluster.close();
@@ -108,7 +108,12 @@ public class CassandraTweet {
         session.execute("INSERT INTO timeline (username,time,tweet_id) VALUES ('"+uname+"',"+timeuuid+","+uuid+")");
         session.execute("INSERT INTO userline (username,time,tweet_id) VALUES ('"+uname+"',"+timeuuid+","+uuid+")");
         System.out.println(uname+":"+tweet+" published");
-        //belum ketimeline semua follower
+
+        ResultSet results = session.execute("SELECT * FROM followers WHERE username='"+uname+"'");
+        for (Row row : results) {     
+            session.execute("INSERT INTO timeline (username,time,tweet_id) VALUES ('"+row.getString("follower")+"',"+timeuuid+","+uuid+")");           
+        }
+   
     }
 
     public static void showTweet(String uname){
@@ -121,14 +126,15 @@ public class CassandraTweet {
     
     public static void showTimeline(String uname){
         // Use select to get the user we just entered
-//        ResultSet resultstl = session.execute("SELECT * FROM tweets WHERE username='"+uname+"'");
-        ResultSet resultstl = session.execute("SELECT * FROM timeline WHERE username='user'");
-        System.out.println("hasil query select: " + resultstl.all().size());
-        for (Row row : resultstl) {
-//            System.out.format("%d\n", row.getInt("tweet_id"));
-            System.out.format("%s : %s \n", row.getString("username"), row.getString("body"));
+        ResultSet resultstl = session.execute("SELECT * FROM timeline WHERE username='"+uname+"'");
+//        System.out.println("hasil query select: " + resultstl.all().size());
+        for (Row row : resultstl) {            
+            System.out.format("%s \n", row.getString("username"));
+            ResultSet resultstw = session.execute("SELECT * FROM tweets WHERE tweet_id="+row.getUUID("tweet_id"));            
+            for (Row row1 : resultstw) {
+                System.out.format("%s : %s \n", row1.getString("username"), row1.getString("body"));                
+            }            
         }
-        System.out.println("========================================masuk showTimeline========================================");
-
+        
     }
 }
