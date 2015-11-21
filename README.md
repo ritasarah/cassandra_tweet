@@ -1,5 +1,4 @@
-# ReplicatedStackJGroups_PAT
-Apache Cassandra
+# Apache Cassandra
 
 ## Oleh:
 1. Rita Sarah / 13512009
